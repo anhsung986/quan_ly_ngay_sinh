@@ -9,25 +9,44 @@
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 15px; }
         .container { max-width: 900px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 22px; margin-bottom: 5px; }
+        .header p { font-size: 13px; opacity: 0.9; }
+
         .form-box { background: #f8fafc; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #e2e8f0; display: flex; flex-direction: column; gap: 12px; }
-        input { width: 100%; padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 10px; }
-        .btn-add { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        input { width: 100%; padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none; background: #fff; }
+        input:focus { border-color: #667eea; box-shadow: 0 0 5px rgba(102, 126, 234, 0.3); }
+
+        .btn-add { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
+
         .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; }
-        th { background: #667eea; color: white; padding: 10px; font-size: 12px; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; text-align: center; }
-        .status-badge { padding: 4px 8px; border-radius: 10px; font-weight: bold; font-size: 11px; }
-        .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
-        dialog { border: none; border-radius: 15px; padding: 20px; width: 85%; max-width: 320px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; text-align: left; }
+        th { background: #667eea; color: white; padding: 10px; font-size: 12px; text-transform: uppercase; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; }
+        tr:hover { background: #f1f5f9; }
+
+        .status-badge { padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 11px; display: inline-block; }
+        .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-delete:hover { background: #ef4444; color: white; }
+
+        /* Khung Embed xác nhận mật khẩu */
+        dialog { border: none; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); width: 85%; max-width: 320px; margin: auto; }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+        dialog input { width: 100%; margin: 15px 0; }
+        .dialog-btns { display: flex; gap: 10px; justify-content: flex-end; }
+        .dialog-btns button { padding: 8px 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header"><h1>🎂 Quản Lý Sinh Nhật</h1></div>
+        <div class="header">
+            <h1>🎂 Quản Lý Sinh Nhật</h1>
+            <p>Lưu trữ và theo dõi ngày sinh nhật trực tuyến</p>
+        </div>
+
         <form id="contactForm" class="form-box">
-            <input type="text" id="name" placeholder="👤 Tên" required>
-            <input type="text" id="phone" placeholder="📞 SĐT">
+            <input type="text" id="name" placeholder="👤 Tên người đó" required>
+            <input type="text" id="phone" placeholder="📞 Số điện thoại">
             <div style="font-size: 11px; font-weight:bold; color:#64748b;">📅 Ngày sinh</div>
             <input type="date" id="dob" required>
             <button type="submit" class="btn-add">THÊM MỚI ✨</button>
@@ -35,18 +54,30 @@
 
         <div class="table-container">
             <table>
-                <thead><tr><th>Tên</th><th>SĐT</th><th>Ngày sinh</th><th>Đếm ngược</th><th>Hành động</th></tr></thead>
-                <tbody id="contactTableBody"></tbody>
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>SĐT</th>
+                        <th>Ngày sinh</th>
+                        <th>Đếm ngược</th>
+                        <th style="text-align: center;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="contactTableBody">
+                    <tr><td colspan="5" style="text-align:center; padding: 20px; color:#64748b;">Đang tải dữ liệu từ Firebase...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 
+    <!-- Khung Embed Mật Khẩu -->
     <dialog id="passwordDialog">
-        <h3>🔐 Xác nhận xóa</h3>
+        <h3 style="font-size: 16px; color: #1e293b;">🔐 Xác nhận mật khẩu</h3>
+        <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Nhập mật khẩu để xóa dữ liệu này</p>
         <input type="password" id="passInput" placeholder="Nhập mật khẩu...">
-        <div style="display:flex; gap:10px; justify-content: flex-end; margin-top:10px;">
-            <button onclick="document.getElementById('passwordDialog').close()">Hủy</button>
-            <button style="background:#ef4444; color:white;" onclick="confirmDelete()">Xóa</button>
+        <div class="dialog-btns">
+            <button style="background: #cbd5e1; color: #334155;" onclick="closeDialog()">Hủy</button>
+            <button style="background: #ef4444; color: white;" onclick="confirmDelete()">Xóa</button>
         </div>
     </dialog>
 
@@ -54,48 +85,103 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const db = getDatabase(initializeApp({databaseURL: "https://kkkk-efe87-default-rtdb.asia-southeast1.firebasedatabase.app"}));
+        const db = getDatabase(initializeApp({
+            databaseURL: "https://kkkk-efe87-default-rtdb.asia-southeast1.firebasedatabase.app"
+        }));
+        
+        const contactsRef = ref(db, 'contacts');
+        const dialog = document.getElementById('passwordDialog');
         let deleteId = null;
 
-        onValue(ref(db, 'contacts'), (snapshot) => {
+        // Lấy dữ liệu và tính toán ngày đếm ngược
+        onValue(contactsRef, (snapshot) => {
             const body = document.getElementById('contactTableBody');
             body.innerHTML = '';
             const data = snapshot.val() || {};
+            
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            Object.entries(data).forEach(([id, val]) => {
-                const bday = new Date(val.dob);
-                let nextBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
-                if (nextBday < today) nextBday.setFullYear(today.getFullYear() + 1);
+            const entries = Object.entries(data);
+            if (entries.length === 0) {
+                body.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px; color:#64748b;">Chưa có dữ liệu nào.</td></tr>`;
+                return;
+            }
+
+            entries.forEach(([id, val]) => {
+                const bdayParts = val.dob.split('-');
+                const bMonth = parseInt(bdayParts[1], 10) - 1;
+                const bDay = parseInt(bdayParts[2], 10);
+
+                let nextBday = new Date(today.getFullYear(), bMonth, bDay);
+                nextBday.setHours(0, 0, 0, 0);
+
+                // Nếu ngày sinh trong năm đã qua, bắt đầu tính đếm ngược cho năm sau từ ngày mai
+                if (nextBday < today) {
+                    nextBday.setFullYear(today.getFullYear() + 1);
+                }
                 
-                const diff = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
-                const countdown = diff === 0 ? "🎉 HÔM NAY" : `Còn ${diff} ngày`;
+                const diffTime = nextBday - today;
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                
+                let countdown = "";
+                let bgColor = "#dcfce7";
+                let textColor = "#16a34a";
 
-                body.innerHTML += `<tr>
-                    <td><b>${val.name}</b></td><td>${val.phone}</td><td>${val.dob}</td>
-                    <td><span class="status-badge" style="background:${diff===0?'#fee2e2':'#dcfce7'}">${countdown}</span></td>
-                    <td><button class="btn-delete" onclick="openDialog('${id}')">Xóa</button></td>
-                </tr>`;
+                if (diffDays === 0) {
+                    countdown = "🎉 HÔM NAY";
+                    bgColor = "#fee2e2";
+                    textColor = "#dc2626";
+                } else {
+                    countdown = `Còn ${diffDays} ngày`;
+                }
+
+                body.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: #4f46e5;">${val.name}</td>
+                        <td>${val.phone || '---'}</td>
+                        <td>${val.dob}</td>
+                        <td><span class="status-badge" style="background:${bgColor}; color:${textColor}">${countdown}</span></td>
+                        <td style="text-align: center;">
+                            <button class="btn-delete" onclick="openDialog('${id}')">Xóa</button>
+                        </td>
+                    </tr>
+                `;
             });
         });
 
-        window.openDialog = (id) => { deleteId = id; document.getElementById('passwordDialog').showModal(); }
-        window.confirmDelete = async () => {
-            if (document.getElementById('passInput').value === "1234567890") {
-                await remove(ref(db, 'contacts/' + deleteId));
-                document.getElementById('passwordDialog').close();
-            } else alert("Sai mật khẩu!");
-        };
-
-        document.getElementById('contactForm').addEventListener('submit', (e) => {
+        // Thêm mới dữ liệu
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            push(ref(db, 'contacts'), {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                dob: document.getElementById('dob').value
-            });
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const dob = document.getElementById('dob').value;
+
+            const newRef = push(contactsRef);
+            await set(newRef, { name, phone, dob });
             e.target.reset();
         });
+
+        // Quản lý Dialog Xóa bằng mật khẩu
+        window.openDialog = (id) => {
+            deleteId = id;
+            document.getElementById('passInput').value = '';
+            dialog.showModal();
+        }
+
+        window.closeDialog = () => {
+            dialog.close();
+        }
+
+        window.confirmDelete = async () => {
+            const pass = document.getElementById('passInput').value;
+            if (pass === "1234567890") {
+                await remove(ref(db, 'contacts/' + deleteId));
+                closeDialog();
+            } else {
+                alert("Mật khẩu sai!");
+            }
+        };
     </script>
 </body>
 </html>
