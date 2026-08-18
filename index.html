@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Sinh Nhật</title>
+    <!-- Thư viện SortableJS để kéo thả sắp xếp -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 15px; }
@@ -23,6 +25,11 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; text-align: left; }
         th { background: #667eea; color: white; padding: 10px; font-size: 12px; text-transform: uppercase; }
         td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; }
+        
+        /* Hiệu ứng khi đang kéo thả */
+        tr.sortable-ghost { opacity: 0.4; background: #c7d2fe !important; }
+        tr { cursor: grab; background: #ffffff; }
+        tr:active { cursor: grabbing; }
         tr:hover { background: #f1f5f9; }
 
         .status-badge { padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 11px; display: inline-block; }
@@ -44,7 +51,7 @@
     <div class="container">
         <div class="header">
             <h1>🎂 Quản Lý Sinh Nhật</h1>
-            <p>Lưu trữ và theo dõi ngày sinh nhật trực tuyến</p>
+            <p>Kéo thả các hàng trong bảng để sắp xếp lại thứ tự</p>
         </div>
 
         <form id="contactForm" class="form-box">
@@ -62,6 +69,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th style="width: 40px; text-align: center;">☰</th>
                         <th>Họ tên</th>
                         <th>SĐT</th>
                         <th>Ngày sinh</th>
@@ -70,7 +78,7 @@
                     </tr>
                 </thead>
                 <tbody id="contactTableBody">
-                    <tr><td colspan="5" style="text-align:center; padding: 20px; color:#64748b;">Đang tải dữ liệu từ Firebase...</td></tr>
+                    <tr><td colspan="6" style="text-align:center; padding: 20px; color:#64748b;">Đang tải dữ liệu từ Firebase...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -105,6 +113,15 @@
         let allContacts = {};
         let deleteId = null;
 
+        // Kích hoạt tính năng kéo thả cho bảng bằng SortableJS
+        document.addEventListener("DOMContentLoaded", () => {
+            const tbody = document.getElementById('contactTableBody');
+            Sortable.create(tbody, {
+                animation: 150,
+                ghostClass: 'sortable-ghost'
+            });
+        });
+
         // Lấy dữ liệu và tính toán ngày đếm ngược
         onValue(contactsRef, (snapshot) => {
             const body = document.getElementById('contactTableBody');
@@ -116,7 +133,7 @@
 
             const entries = Object.entries(allContacts);
             if (entries.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px; color:#64748b;">Chưa có dữ liệu nào.</td></tr>`;
+                body.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color:#64748b;">Chưa có dữ liệu nào.</td></tr>`;
                 return;
             }
 
@@ -148,7 +165,8 @@
                 }
 
                 body.innerHTML += `
-                    <tr>
+                    <tr data-id="${id}">
+                        <td style="text-align: center; color: #94a3b8; font-size: 16px;">☰</td>
                         <td style="font-weight: bold; color: #4f46e5;">${val.name}</td>
                         <td>${val.phone || '---'}</td>
                         <td>${val.dob}</td>
