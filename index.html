@@ -5,45 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Sinh Nhật</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; margin-bottom: 25px; }
-        .form-box { background: #f8fafc; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid #e2e8f0; display: grid; gap: 12px; }
-        input { padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; }
-        .btn-add { background: #ff7eb3; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; }
-        .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 15px; }
+        .container { max-width: 900px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* Style cho bảng Embed (Dialog) */
-        dialog { border: none; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 300px; }
-        dialog input { width: 100%; margin-bottom: 10px; }
-        dialog button { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 22px; margin-bottom: 5px; }
+        .header p { font-size: 13px; opacity: 0.9; }
+
+        .form-box { background: #f8fafc; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #e2e8f0; display: flex; flex-direction: column; gap: 12px; }
+
+        input { width: 100%; padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none; background: #fff; }
+        input:focus { border-color: #667eea; box-shadow: 0 0 5px rgba(102, 126, 234, 0.3); }
+
+        .btn-add { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
+        .btn-cancel { background: #cbd5e1; color: #334155; border: none; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; display: none; width: 100%; }
+
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left; min-width: 500px; }
+        th { background: #667eea; color: white; padding: 10px; font-size: 12px; text-transform: uppercase; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; }
+        tr:hover { background: #f1f5f9; }
+
+        .btn-edit { background: #e0e7ff; color: #4f46e5; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 4px; }
+        .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        /* Khung Embed xác nhận mật khẩu */
+        dialog { border: none; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); width: 85%; max-width: 320px; margin: auto; }
+        dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+        dialog input { width: 100%; margin: 15px 0; }
+        .dialog-btns { display: flex; gap: 10px; justify-content: flex-end; }
+        .dialog-btns button { padding: 8px 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header"><h1>🎂 Quản Lý Sinh Nhật</h1></div>
+        <div class="header">
+            <h1>🎂 Quản Lý Sinh Nhật</h1>
+            <p>Lưu trữ và theo dõi ngày sinh nhật trực tuyến</p>
+        </div>
+
         <form id="contactForm" class="form-box">
             <input type="hidden" id="editId">
-            <input type="text" id="name" placeholder="👤 Tên" required>
+            <input type="text" id="name" placeholder="👤 Tên người đó" required>
             <input type="text" id="phone" placeholder="📞 Số điện thoại">
-            <input type="date" id="dob" required>
-            <button type="submit" class="btn-add">THÊM MỚI ✨</button>
+            
+            <!-- Có chữ Ngày sinh trong ô -->
+            <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 11px; color: #64748b; margin-bottom: 3px; font-weight: bold;">📅 Ngày sinh</span>
+                <input type="date" id="dob" required>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-add">THÊM MỚI ✨</button>
+            <button type="button" id="cancelBtn" class="btn-cancel" onclick="resetForm()">Hủy chỉnh sửa</button>
         </form>
-        <table id="contactTable" style="width:100%; border-collapse: collapse;">
-            <thead><tr><th>Tên</th><th>SĐT</th><th>Ngày sinh</th><th>Hành động</th></tr></thead>
-            <tbody id="contactTableBody"></tbody>
-        </table>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>SĐT</th>
+                        <th>Ngày sinh</th>
+                        <th style="text-align: center;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="contactTableBody">
+                    <tr><td colspan="4" style="text-align:center; padding: 20px; color:#64748b;">Đang tải dữ liệu...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Khung Embed xác nhận mật khẩu -->
+    <!-- Khung Embed Mật Khẩu -->
     <dialog id="passwordDialog">
-        <h3 style="margin-bottom:10px;">Xác nhận xóa</h3>
+        <h3 style="font-size: 16px; color: #1e293b;">🔐 Xác nhận mật khẩu</h3>
+        <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Nhập mật khẩu để xóa dữ liệu này</p>
         <input type="password" id="passInput" placeholder="Nhập mật khẩu...">
-        <div style="display:flex; justify-content: flex-end; gap: 10px;">
-            <button onclick="closeDialog()">Hủy</button>
-            <button style="background:#ef4444; color:white;" onclick="confirmDelete()">Xóa</button>
+        <div class="dialog-btns">
+            <button style="background: #cbd5e1; color: #334155;" onclick="closeDialog()">Hủy</button>
+            <button style="background: #ef4444; color: white;" onclick="confirmDelete()">Xóa</button>
         </div>
     </dialog>
 
@@ -51,46 +93,109 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const db = getDatabase(initializeApp({databaseURL: "https://kkkk-efe87-default-rtdb.asia-southeast1.firebasedatabase.app"}));
+        const db = getDatabase(initializeApp({
+            databaseURL: "https://kkkk-efe87-default-rtdb.asia-southeast1.firebasedatabase.app"
+        }));
+        
         const contactsRef = ref(db, 'contacts');
         const dialog = document.getElementById('passwordDialog');
+        const form = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const editIdInput = document.getElementById('editId');
+        
+        let allContacts = {};
         let deleteId = null;
 
+        // Lấy dữ liệu Realtime
         onValue(contactsRef, (snapshot) => {
             const body = document.getElementById('contactTableBody');
             body.innerHTML = '';
-            const data = snapshot.val() || {};
-            Object.entries(data).forEach(([id, val]) => {
-                body.innerHTML += `<tr><td>${val.name}</td><td>${val.phone}</td><td>${val.dob}</td>
-                    <td><button class="btn-delete" onclick="openDialog('${id}')">Xóa</button></td></tr>`;
+            allContacts = snapshot.val() || {};
+            
+            const entries = Object.entries(allContacts);
+            if (entries.length === 0) {
+                body.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px; color:#64748b;">Chưa có dữ liệu nào.</td></tr>`;
+                return;
+            }
+
+            entries.forEach(([id, val]) => {
+                body.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: #4f46e5;">${val.name}</td>
+                        <td>${val.phone || '---'}</td>
+                        <td>${val.dob}</td>
+                        <td style="text-align: center; white-space: nowrap;">
+                            <button class="btn-edit" onclick="window.editContact('${id}')">Sửa</button>
+                            <button class="btn-delete" onclick="window.openDialog('${id}')">Xóa</button>
+                        </td>
+                    </tr>
+                `;
             });
         });
 
-        // Hàm mở/đóng Embed
-        window.openDialog = (id) => { deleteId = id; dialog.showModal(); }
-        window.closeDialog = () => { dialog.close(); document.getElementById('passInput').value = ''; }
+        // Thêm hoặc Cập nhật
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = editIdInput.value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const dob = document.getElementById('dob').value;
 
-        // Hàm xóa sau khi kiểm tra
+            if (id) {
+                await update(ref(db, 'contacts/' + id), { name, phone, dob });
+                alert("Đã cập nhật thành công!");
+            } else {
+                const newRef = push(contactsRef);
+                await set(newRef, { name, phone, dob });
+            }
+            resetForm();
+        });
+
+        window.editContact = function(id) {
+            const person = allContacts[id];
+            if (person) {
+                editIdInput.value = id;
+                document.getElementById('name').value = person.name;
+                document.getElementById('phone').value = person.phone || '';
+                document.getElementById('dob').value = person.dob;
+
+                submitBtn.innerText = "CẬP NHẬT 💾";
+                submitBtn.style.background = "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)";
+                cancelBtn.style.display = "block";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        window.resetForm = function() {
+            form.reset();
+            editIdInput.value = '';
+            submitBtn.innerText = "THÊM MỚI ✨";
+            submitBtn.style.background = "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)";
+            cancelBtn.style.display = "none";
+        }
+
+        // Quản lý Dialog Xóa
+        window.openDialog = (id) => {
+            deleteId = id;
+            document.getElementById('passInput').value = '';
+            dialog.showModal();
+        }
+
+        window.closeDialog = () => {
+            dialog.close();
+        }
+
         window.confirmDelete = async () => {
             const pass = document.getElementById('passInput').value;
             if (pass === "1234567890") {
                 await remove(ref(db, 'contacts/' + deleteId));
                 closeDialog();
-                alert("Đã xóa!");
+                alert("Đã xóa thành công!");
             } else {
                 alert("Mật khẩu sai!");
             }
         };
-
-        document.getElementById('contactForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            push(contactsRef, {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                dob: document.getElementById('dob').value
-            });
-            e.target.reset();
-        });
     </script>
 </body>
 </html>
