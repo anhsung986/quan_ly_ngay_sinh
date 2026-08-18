@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Sinh Nhật</title>
-    <!-- Thư viện SortableJS để kéo thả sắp xếp -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 15px; }
@@ -25,11 +23,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; text-align: left; }
         th { background: #667eea; color: white; padding: 10px; font-size: 12px; text-transform: uppercase; }
         td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; }
-        
-        /* Hiệu ứng khi đang kéo thả */
-        tr.sortable-ghost { opacity: 0.4; background: #c7d2fe !important; }
-        tr { cursor: grab; background: #ffffff; }
-        tr:active { cursor: grabbing; }
         tr:hover { background: #f1f5f9; }
 
         .status-badge { padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 11px; display: inline-block; }
@@ -51,7 +44,7 @@
     <div class="container">
         <div class="header">
             <h1>🎂 Quản Lý Sinh Nhật</h1>
-            <p>Kéo thả các hàng trong bảng để sắp xếp lại thứ tự</p>
+            <p>Tự động sắp xếp từ người nhỏ tuổi nhất đến lớn tuổi nhất</p>
         </div>
 
         <form id="contactForm" class="form-box">
@@ -69,7 +62,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 40px; text-align: center;">☰</th>
+                        <th style="width: 50px; text-align: center;">STT</th>
                         <th>Họ tên</th>
                         <th>SĐT</th>
                         <th>Ngày sinh</th>
@@ -113,16 +106,7 @@
         let allContacts = {};
         let deleteId = null;
 
-        // Kích hoạt tính năng kéo thả cho bảng bằng SortableJS
-        document.addEventListener("DOMContentLoaded", () => {
-            const tbody = document.getElementById('contactTableBody');
-            Sortable.create(tbody, {
-                animation: 150,
-                ghostClass: 'sortable-ghost'
-            });
-        });
-
-        // Lấy dữ liệu và tính toán ngày đếm ngược
+        // Lấy dữ liệu, tính đếm ngược và tự động sắp xếp theo tuổi (từ nhỏ đến lớn -> ngày sinh từ mới đến cũ)
         onValue(contactsRef, (snapshot) => {
             const body = document.getElementById('contactTableBody');
             body.innerHTML = '';
@@ -137,7 +121,11 @@
                 return;
             }
 
-            entries.forEach(([id, val]) => {
+            // Chuyển dữ liệu sang mảng để xử lý
+            const list = entries.map(([id, val]) => {
+                const bdayDate = new Date(val.dob);
+                
+                // Tính đếm ngược sinh nhật
                 const bdayParts = val.dob.split('-');
                 const bMonth = parseInt(bdayParts[1], 10) - 1;
                 const bDay = parseInt(bdayParts[2], 10);
@@ -151,6 +139,16 @@
                 
                 const diffTime = nextBday - today;
                 const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+                return { id, val, bdayDate, diffDays };
+            });
+
+            // Sắp xếp theo tuổi từ nhỏ đến lớn: Người nhỏ tuổi nhất (ngày sinh mới nhất) lên đầu
+            // Tương ứng với việc sắp xếp ngày sinh giảm dần (ngày sinh lớn hơn nằm trước)
+            list.sort((a, b) => b.bdayDate - a.bdayDate);
+
+            list.forEach((item, index) => {
+                const { id, val, diffDays } = item;
                 
                 let countdown = "";
                 let bgColor = "#dcfce7";
@@ -165,8 +163,8 @@
                 }
 
                 body.innerHTML += `
-                    <tr data-id="${id}">
-                        <td style="text-align: center; color: #94a3b8; font-size: 16px;">☰</td>
+                    <tr>
+                        <td style="text-align: center; font-weight: bold; color: #64748b;">#${index + 1}</td>
                         <td style="font-weight: bold; color: #4f46e5;">${val.name}</td>
                         <td>${val.phone || '---'}</td>
                         <td>${val.dob}</td>
