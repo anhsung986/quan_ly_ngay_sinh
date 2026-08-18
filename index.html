@@ -8,38 +8,92 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+
         .form-box { background: #f8fafc; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 2px solid #e2e8f0; display: grid; grid-template-columns: 1fr; gap: 12px; }
-        input { padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 10px; }
-        .btn-add { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; }
-        .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+        @media(min-width: 640px) { .form-box { grid-template-columns: 1fr 1fr 1fr auto; } }
+
+        input { padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 14px; outline: none; transition: 0.2s; background: #fff; }
+        input:focus { border-color: #667eea; box-shadow: 0 0 5px rgba(102, 126, 234, 0.3); }
+
+        .btn-add { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-add:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .btn-cancel { background: #cbd5e1; color: #334155; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; display: none; }
+
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left; }
+        th { background: #667eea; color: white; padding: 12px 15px; font-size: 13px; text-transform: uppercase; }
+        th:first-child { border-top-left-radius: 10px; }
+        th:last-child { border-top-right-radius: 10px; }
+        
+        td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #334155; }
+        tr:hover { background: #f1f5f9; }
+
+        .badge-today { background: #fee2e2; color: #dc2626; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 12px; display: inline-block; }
+        .badge-soon { background: #dcfce7; color: #16a34a; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 12px; display: inline-block; }
+
+        .btn-edit { background: #e0e7ff; color: #4f46e5; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-right: 5px; }
+        .btn-edit:hover { background: #4f46e5; color: white; }
+
+        .btn-delete { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-delete:hover { background: #ef4444; color: white; }
+        
+        .loading { text-align: center; color: #64748b; padding: 20px; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header"><h1>🎂 Quản Lý Sinh Nhật</h1></div>
+        <div class="header">
+            <h1>🎂 Quản Lý Sinh Nhật</h1>
+            <p>Lưu trữ và theo dõi ngày sinh nhật trực tuyến</p>
+        </div>
+
         <form id="contactForm" class="form-box">
+            <input type="hidden" id="editId">
             <input type="text" id="name" placeholder="👤 Tên người đó" required>
             <input type="text" id="phone" placeholder="📞 Số điện thoại">
-            <input type="date" id="dob" required>
-            <button type="submit" class="btn-add">THÊM MỚI ✨</button>
+            
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <span style="font-size: 11px; color: #64748b; margin-bottom: 2px; font-weight: bold; padding-left: 2px;">📅 Ngày sinh</span>
+                <input type="date" id="dob" required>
+            </div>
+
+            <div style="display: flex; gap: 5px; align-items: flex-end;">
+                <button type="submit" id="submitBtn" class="btn-add" style="width: 100%;">THÊM MỚI ✨</button>
+                <button type="button" id="cancelBtn" class="btn-cancel" onclick="resetForm()">Hủy</button>
+            </div>
         </form>
 
-        <table id="contactTable">
-            <thead><tr><th>Tên</th><th>SĐT</th><th>Ngày sinh</th><th>Hành động</th></tr></thead>
-            <tbody id="contactTableBody"></tbody>
-        </table>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Họ và tên</th>
+                        <th>Điện thoại</th>
+                        <th>Ngày sinh</th>
+                        <th>Sinh nhật tới</th>
+                        <th>Trạng thái</th>
+                        <th style="text-align: center;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="contactTableBody">
+                    <tr><td colspan="6" class="loading">Đang tải dữ liệu từ Firebase...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
-            databaseURL: "https://kkkk-efe87-default-rtdb.firebaseio.com/", // Đảm bảo URL này đúng của bạn
+            databaseURL: "https://kkkk-efe87-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "kkkk-efe87"
         };
 
@@ -49,41 +103,99 @@
 
         const form = document.getElementById('contactForm');
         const tableBody = document.getElementById('contactTableBody');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const editIdInput = document.getElementById('editId');
 
-        // Lấy dữ liệu
+        let allContacts = {};
+
+        // Lấy dữ liệu Realtime
         onValue(contactsRef, (snapshot) => {
             tableBody.innerHTML = '';
-            const data = snapshot.val();
-            if (data) {
-                Object.entries(data).forEach(([id, val]) => {
-                    tableBody.innerHTML += `<tr>
-                        <td>${val.name}</td><td>${val.phone}</td><td>${val.dob}</td>
-                        <td><button class="btn-delete" onclick="window.deleteData('${id}')">Xóa</button></td>
-                    </tr>`;
-                });
+            allContacts = snapshot.val() || {};
+            
+            const entries = Object.entries(allContacts);
+            if (entries.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="loading">Chưa có dữ liệu nào.</td></tr>`;
+                return;
             }
-        });
 
-        // Thêm dữ liệu
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            push(contactsRef, {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                dob: document.getElementById('dob').value
+            const today = new Date(); today.setHours(0,0,0,0);
+
+            entries.forEach(([id, person]) => {
+                const dob = new Date(person.dob);
+                let nextBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+                if (nextBday < today) nextBday.setFullYear(today.getFullYear() + 1);
+                
+                const diffDays = Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24));
+                const statusTag = diffDays === 0 ? `<span class="badge-today">🎉 HÔM NAY!</span>` : `<span class="badge-soon">Còn ${diffDays} ngày</span>`;
+                
+                tableBody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: bold; color: #4f46e5;">${person.name}</td>
+                        <td>${person.phone || '---'}</td>
+                        <td>${person.dob}</td>
+                        <td>${nextBday.toISOString().split('T')[0]}</td>
+                        <td>${statusTag}</td>
+                        <td style="text-align: center; white-space: nowrap;">
+                            <button class="btn-edit" onclick="window.editContact('${id}')">Sửa</button>
+                            <button class="btn-delete" onclick="window.deleteContact('${id}')">Xóa</button>
+                        </td>
+                    </tr>
+                `;
             });
-            form.reset();
         });
 
-        // Xóa dữ liệu với mật khẩu
-        window.deleteData = (id) => {
-            const pass = prompt("Nhập mật khẩu để xóa:");
-            if (pass === "1234567890") {
-                remove(ref(db, 'contacts/' + id));
-            } else if (pass !== null) {
-                alert("Sai mật khẩu!");
+        // Thêm hoặc Cập nhật
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = editIdInput.value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const dob = document.getElementById('dob').value;
+
+            if (id) {
+                await update(ref(db, 'contacts/' + id), { name, phone, dob });
+                alert("Đã cập nhật thành công!");
+            } else {
+                const newRef = push(contactsRef);
+                await set(newRef, { name, phone, dob });
             }
-        };
+            resetForm();
+        });
+
+        window.editContact = function(id) {
+            const person = allContacts[id];
+            if (person) {
+                editIdInput.value = id;
+                document.getElementById('name').value = person.name;
+                document.getElementById('phone').value = person.phone || '';
+                document.getElementById('dob').value = person.dob;
+
+                submitBtn.innerText = "CẬP NHẬT 💾";
+                submitBtn.style.background = "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)";
+                cancelBtn.style.display = "block";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        window.resetForm = function() {
+            form.reset();
+            editIdInput.value = '';
+            submitBtn.innerText = "THÊM MỚI ✨";
+            submitBtn.style.background = "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)";
+            cancelBtn.style.display = "none";
+        }
+
+        window.deleteContact = async function(id) {
+            const password = prompt("Nhập mật khẩu để xóa:");
+            if (password === "1234567890") {
+                await remove(ref(db, 'contacts/' + id));
+                alert("Đã xóa thành công!");
+            } else if (password !== null) {
+                alert("Mật khẩu sai!");
+            }
+        }
     </script>
 </body>
 </html>
