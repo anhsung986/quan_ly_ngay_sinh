@@ -105,7 +105,7 @@ jobs:
           cat > capacitor.config.json <<'EOF'
           {
             "appId": "com.servermc.proxy",
-            "appName": "Server MC Proxy",
+            "appName": "Quản lý ngày sinh",
             "webDir": "www",
             "server": {
               "url": "https://anhsung986.github.io/Server-MC-Proxy/",
@@ -150,7 +150,7 @@ jobs:
             "$MANIFEST"
 
           sed -i \
-            's|android:label="@string/app_name"|android:label="Server MC Proxy"|g' \
+            's|android:label="@string/app_name"|android:label="Quản lý ngày sinh"|g' \
             "$MANIFEST"
 
           if ! grep -q 'android:icon=' "$MANIFEST"; then
@@ -169,14 +169,14 @@ jobs:
 
           if [ -f "$STRINGS" ]; then
             sed -i \
-              's|<string name="app_name">.*</string>|<string name="app_name">Server MC Proxy</string>|g' \
+              's|<string name="app_name">.*</string>|<string name="app_name">Quản lý ngày sinh</string>|g' \
               "$STRINGS"
           else
             mkdir -p android/app/src/main/res/values
             cat > "$STRINGS" <<'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <string name="app_name">Server MC Proxy</string>
+              <string name="app_name">Quản lý ngày sinh</string>
           </resources>
           EOF
           fi
@@ -218,7 +218,7 @@ jobs:
           mkdir -p output
           cp \
             android/app/build/outputs/apk/debug/app-debug.apk \
-            output/ServerMCProxy.apk
+            output/Quanlyngaysinh.apk
 
 
       # ==========================================
@@ -226,15 +226,15 @@ jobs:
       # ==========================================
       - name: Check Final APK
         run: |
-          if [ ! -f "output/ServerMCProxy.apk" ]; then
-            echo "❌ Không tìm thấy ServerMCProxy.apk"
+          if [ ! -f "output/Quanglyngaysinh.apk" ]; then
+            echo "❌ Không tìm thấy Quanlyngaysinh.apk"
             exit 1
           fi
 
           echo "✅ Build thành công!"
           echo "📱 Tên: Server MC Proxy"
           echo "📦 APK:"
-          ls -lh output/ServerMCProxy.apk
+          ls -lh output/Quanlyngaysinh.apk
 
 
       # ==========================================
@@ -252,7 +252,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: output/ServerMCProxy.apk
+          files: output/Quanlyngaysinh.apk
           tag_name: ${{ env.TAG_NAME }}
           name: Server MC Proxy ${{ env.TAG_NAME }}
           body: |
