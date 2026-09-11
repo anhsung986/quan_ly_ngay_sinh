@@ -1,4 +1,4 @@
-name: Build Server MC Proxy APK
+name: Build Quản lý ngày sinh
 
 on:
   push:
@@ -104,11 +104,11 @@ jobs:
         run: |
           cat > capacitor.config.json <<'EOF'
           {
-            "appId": "com.servermc.proxy",
+            "appId": "com.qlns.Quanlyngaysinh",
             "appName": "Quản lý ngày sinh",
             "webDir": "www",
             "server": {
-              "url": "https://anhsung986.github.io/Server-MC-Proxy/",
+              "url": "https://anhsung986.github.io/quan_ly_ngay_sinh/",
               "cleartext": true
             }
           }
