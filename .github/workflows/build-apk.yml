@@ -226,13 +226,13 @@ jobs:
       # ==========================================
       - name: Check Final APK
         run: |
-          if [ ! -f "output/Quanglyngaysinh.apk" ]; then
+          if [ ! -f "output/Quanlyngaysinh.apk" ]; then
             echo "❌ Không tìm thấy Quanlyngaysinh.apk"
             exit 1
           fi
 
           echo "✅ Build thành công!"
-          echo "📱 Tên: Server MC Proxy"
+          echo "📱 Tên: Quản lý ngày sinh"
           echo "📦 APK:"
           ls -lh output/Quanlyngaysinh.apk
 
