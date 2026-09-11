@@ -108,7 +108,7 @@ jobs:
             "appName": "Quản lý ngày sinh",
             "webDir": "www",
             "server": {
-              "url": "https://anhsung986.github.io/quan_ly_ngay_sinh/",
+              "url": "https://qlns.anh.gt.tc/",
               "cleartext": true
             }
           }
@@ -132,7 +132,7 @@ jobs:
       # ==========================================
       - name: Install Android Icon
         run: |
-          echo "===== Cài icon Server MC Proxy ====="
+          echo "===== Cài icon Quản lý ngày sinh ====="
 
           mkdir -p android/app/src/main/res/drawable
 
@@ -254,18 +254,18 @@ jobs:
         with:
           files: output/Quanlyngaysinh.apk
           tag_name: ${{ env.TAG_NAME }}
-          name: Server MC Proxy ${{ env.TAG_NAME }}
+          name: Quản lý ngày sinh ${{ env.TAG_NAME }}
           body: |
-            # 🧊 Server MC Proxy
+            # 📅 Quản lý ngày sinh
 
-            APK được build tự động bằng GitHub Actions[span_0](start_span)[span_0](end_span).
+            APK được build tự động bằng GitHub Actions.
 
             ## Thông tin
 
-            - 📱 App: Server MC Proxy
+            - 📱 App: Quản lý ngày sinh
             - 🎨 Icon: icon.png
             - 📦 Android APK
-            - 🌐 Website: https://anhsung986.github.io/Server-MC-Proxy/
+            - 🌐 Website: https://qlns.anh.gt.tc/
 
           draft: false
           prerelease: false
